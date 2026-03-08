@@ -1,3 +1,10 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": "1772923779679",
+      "title": "Minha primeira tarefa oficial",
+      "description": "Estou criando meu portfólio de desenvolvedor!",
+      "status": "pending"
+    }
+  ]
 }

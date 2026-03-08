@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Gerenciador de Tarefas</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding: 50px; }
+        .card { background: white; padding: 20px; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); width: 400px; }
+        h1 { color: #333; text-align: center; }
+        .task { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .task:last-child { border: none; }
+        .title { font-weight: bold; color: #007bff; }
+        .desc { font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Minhas Tarefas 📝</h1>
+        <div id="lista">Carregando...</div>
+    </div>
+
+    <script>
+        fetch('http://localhost:3000/tasks')
+            .then(res => res.json())
+            .then(tasks => {
+                const lista = document.getElementById('lista');
+                lista.innerHTML = tasks.map(t => `
+                    <div class="task">
+                        <div class="title">${t.title}</div>
+                        <div class="desc">${t.description}</div>
+                    </div>
+                `).join('') || 'Nenhuma tarefa encontrada.';
+            });
+    </script>
+</body>
+</html>
