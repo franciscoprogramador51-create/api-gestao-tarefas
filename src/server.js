@@ -1,33 +1,36 @@
 const express = require('express');
 const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-
+const fs = require('fs');
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// 🔗 COLE SEUS CÓDIGOS AQUI EMBAIXO
-const supabaseUrl = 'https://arxftxobcohkziyejrlr.supabase.co'
-const supabaseKey = 'sb_publishable_dxtNKXXCPFQGSqqHWGQN8w_XOn_1G_D'
-const supabase = createClient(supabaseUrl, supabaseKey);
+const DB_FILE = './db.json';
 
-// 🟢 ROTA: BUSCAR TAREFAS NA NUVEM
-app.get('/tasks', async (req, res) => {
-    const { data, error } = await supabase.from('tasks').select('*');
-    if (error) return res.status(400).json(error);
-    res.json(data);
+// Função para ler o banco (arquivo JSON)
+const readDB = () => {
+    if (!fs.existsSync(DB_FILE)) return [];
+    const data = fs.readFileSync(DB_FILE);
+    return JSON.parse(data);
+};
+
+// Rota para LISTAR tarefas (GET)
+app.get('/tasks', (req, res) => {
+    const tasks = readDB();
+    res.json(tasks);
 });
 
-// 🔵 ROTA: SALVAR TAREFA NA NUVEM
-app.post('/tasks', async (req, res) => {
-    const { title, description } = req.body;
-    const { data, error } = await supabase
-        .from('tasks')
-        .insert([{ title, description }])
-        .select();
-
-    if (error) return res.status(400).json(error);
-    res.status(201).json(data[0]);
+// Rota para CRIAR tarefa (POST)
+app.post('/tasks', (req, res) => {
+    const tasks = readDB();
+    const newTask = { 
+        id: Date.now(), 
+        title: req.body.title 
+    };
+    tasks.push(newTask);
+    fs.writeFileSync(DB_FILE, JSON.stringify(tasks, null, 2));
+    res.status(201).json(newTask);
 });
 
-app.listen(3000, () => console.log("🚀 API GRADUADA! Conectada ao Supabase Cloud."));
+app.listen(3000, () => console.log('🚀 API de Tarefas rodando na porta 3000!'));
